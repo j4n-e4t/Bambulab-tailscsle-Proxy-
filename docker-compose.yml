@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  bambulab-proxy:
+    build: .
+    container_name: bambulab-proxy
+    environment:
+      # Printer configuration (REQUIRED)
+      - PRINTER_HOST=${PRINTER_HOST}
+      - PRINTER_PORT=${PRINTER_PORT:-8883}
+      
+      # Proxy configuration
+      - PROXY_BIND_HOST=${PROXY_BIND_HOST:-0.0.0.0}
+      - PROXY_BIND_PORT=${PROXY_BIND_PORT:-8883}
+      
+      # Tailscale configuration (OPTIONAL)
+      - TAILSCALE_AUTHKEY=${TAILSCALE_AUTHKEY}
+      - TAILSCALE_HOSTNAME=${TAILSCALE_HOSTNAME:-bambulab-proxy}
+    
+    ports:
+      - "${PROXY_BIND_PORT:-8883}:${PROXY_BIND_PORT:-8883}"
+    
+    volumes:
+      - tailscale-state:/var/lib/tailscale
+    
+    restart: unless-stopped
+    
+    # Required for Tailscale
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+
+volumes:
+  tailscale-state:
