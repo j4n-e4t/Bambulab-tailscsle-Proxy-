@@ -11,8 +11,15 @@ if [ -n "$TAILSCALE_AUTHKEY" ]; then
     tailscaled --tun=userspace-networking --state=/var/lib/tailscale/tailscaled.state --socket=/var/run/tailscale/tailscaled.sock &
     TAILSCALED_PID=$!
     
-    # Wait for tailscaled to be ready
-    sleep 2
+    # Wait for tailscaled to be ready (with timeout)
+    echo "Waiting for tailscaled to be ready..."
+    for i in $(seq 1 30); do
+        if tailscale status >/dev/null 2>&1; then
+            echo "tailscaled is ready"
+            break
+        fi
+        sleep 1
+    done
     
     # Authenticate with Tailscale
     echo "Authenticating with Tailscale..."

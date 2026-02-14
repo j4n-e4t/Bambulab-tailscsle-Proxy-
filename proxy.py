@@ -77,7 +77,7 @@ class TCPProxy:
         finally:
             try:
                 client_socket.close()
-            except:
+            except Exception:
                 pass
             logger.info(f"Connection closed from {client_address}")
 
@@ -121,7 +121,7 @@ class TCPProxy:
         if self.server_socket:
             try:
                 self.server_socket.close()
-            except:
+            except Exception:
                 pass
 
 
